@@ -152,12 +152,11 @@ class Manager(Employee):
         self.performance += newperformance
         if newperformance <= 0:
             self.happiness -= 1
-            for employee in self.relationships.items():
-                var = self.relationships[employee] - 1
-                self.relationships[employee] = max(RELATIONSHIP_MIN, var)
+            for employee in self.relationships:
+                self.relationships[employee] = \
+                max(RELATIONSHIP_MIN, self.relationships[employee] - 1)
         else:
             self.happiness += 1
-
 
 class TemporaryEmployee(Employee):
     """
@@ -181,8 +180,9 @@ class TemporaryEmployee(Employee):
             elif other.happiness <= HAPPINESS_THRESHOLD:
                 self.salary //= 2
                 self.happiness -= 5
-                if self.salary <= 0:
+                if self.salary == 0:
                     self.is_employed = False
+
 
 
 class PermanentEmployee(Employee):
@@ -199,9 +199,8 @@ class PermanentEmployee(Employee):
         super().interact(other)
 
         if isinstance(other, Manager) and other is self.manager:
-            if other.happiness <= HAPPINESS_THRESHOLD:
-                self.happiness -= 1
-
-            if (other.happiness > HAPPINESS_THRESHOLD and self.performance
-                > PERM_EMPLOYEE_PERFORMANCE_THRESHOLD):
+            if other.happiness > HAPPINESS_THRESHOLD and \
+            self.performance > PERM_EMPLOYEE_PERFORMANCE_THRESHOLD:
                 self.savings += MANAGER_BONUS
+            elif other.happiness <= HAPPINESS_THRESHOLD:
+                self.happiness -= 1
